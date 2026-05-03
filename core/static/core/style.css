@@ -426,14 +426,15 @@ body.signup-page .auth-btn-primary:hover { background-color: #1e40af !important;
 
 .showcase-header h2 {
   font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(26px, 4vw, 40px);
+  font-size: clamp(28px, 4.5vw, 44px);
   font-weight: 800;
   line-height: 1.1;
-  letter-spacing: -0.02em;
-  background: linear-gradient(180deg, #fff 60%, rgba(255,255,255,0.6));
+  letter-spacing: -0.03em;
+  background: linear-gradient(180deg, #fff 40%, rgba(255,255,255,0.7));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin: 0;
+  text-shadow: 0 10px 30px rgba(0,224,255,0.1);
 }
 
 .showcase-header p {
@@ -446,8 +447,20 @@ body.signup-page .auth-btn-primary:hover { background-color: #1e40af !important;
 
 .showcase-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr;
   gap: 20px;
+}
+
+@media (min-width: 768px) {
+  .showcase-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .showcase-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .showcase-card--wide {
@@ -456,29 +469,37 @@ body.signup-page .auth-btn-primary:hover { background-color: #1e40af !important;
 
 .showcase-card {
   position: relative;
-  background: linear-gradient(145deg, rgba(255,255,255,0.055) 0%, rgba(255,255,255,0.015) 100%);
-  border: none;
-  border-radius: 20px;
-  padding: 30px;
+  background: linear-gradient(145deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.01) 100%);
+  border: 1px solid rgba(255,255,255,0.03);
+  border-radius: 24px;
+  padding: 34px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   overflow: hidden;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.2);
 }
 
 .showcase-card::before {
   content: '';
   position: absolute;
   top: 0; left: 0;
-  width: 180px; height: 180px;
-  background: radial-gradient(circle at top left, rgba(0,224,255,0.07), transparent 70%);
+  width: 200px; height: 200px;
+  background: radial-gradient(circle at top left, rgba(0,224,255,0.1), transparent 70%);
   pointer-events: none;
+  transition: opacity 0.3s ease;
 }
 
 .showcase-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+  transform: translateY(-8px) scale(1.01);
+  box-shadow: 0 30px 70px rgba(0,0,0,0.45);
+  border-color: rgba(0,224,255,0.15);
+  background: linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+}
+
+.showcase-card:hover::before {
+  opacity: 0.8;
 }
 
 .showcase-card__label {
@@ -523,20 +544,22 @@ body.signup-page .auth-btn-primary:hover { background-color: #1e40af !important;
 .showcase-card__cta {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 13px;
+  gap: 8px;
+  font-size: 13.5px;
   font-weight: 700;
   color: var(--accent);
   text-decoration: none;
   width: max-content;
-  padding-bottom: 3px;
-  border-bottom: 1px solid rgba(0,224,255,0.3);
-  transition: border-color 0.2s, letter-spacing 0.2s;
+  padding-bottom: 4px;
+  border-bottom: 2px solid rgba(0,224,255,0.2);
+  transition: all 0.2s ease;
+  margin-top: 4px;
 }
 
 .showcase-card__cta:hover {
   border-color: var(--accent);
-  letter-spacing: 0.02em;
+  gap: 12px;
+  color: #fff;
 }
 
 /* ── Mock Predictor ── */
@@ -727,6 +750,65 @@ body.signup-page .auth-btn-primary:hover { background-color: #1e40af !important;
 .mock-sent-chip--positive { background: rgba(116,242,155,0.09); border-color: rgba(116,242,155,0.22); color: #74f29b; }
 .mock-sent-chip--negative { background: rgba(255,123,132,0.09); border-color: rgba(255,123,132,0.22); color: #ff7b84; }
 .mock-sent-chip--neutral  { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.09); color: rgba(217,226,236,0.7); }
+
+
+/* ── Mock History ── */
+.mock-history {
+  margin-top: 12px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.mock-history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12.5px;
+}
+.mock-history-name {
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+}
+.mock-history-val {
+  font-weight: 700;
+}
+
+/* ── Mock Watchlist ── */
+.mock-watchlist {
+  margin-top: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 16px 14px;
+  display: flex;
+  gap: 10px;
+}
+.mock-watchlist-box {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.mock-watchlist-ticker {
+  font-weight: 700;
+  font-size: 13px;
+  color: #fff;
+  letter-spacing: 0.01em;
+}
+.mock-watchlist-chg {
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
 
 
 /* ========================================================= */

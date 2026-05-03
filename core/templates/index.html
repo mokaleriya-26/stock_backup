@@ -169,7 +169,53 @@
             </div>
           </div>
 
-          <!-- CARD 4: Sentiment Analysis -->
+          <!-- NEW: CARD 4: History -->
+          <div class="showcase-card">
+            <div class="showcase-card__label">{% trans "History" %}</div>
+            <h3 class="showcase-card__title">{% trans "Track your activity" %} <span class="accent-text">{% trans "and past analysis" %}</span></h3>
+            <p class="showcase-card__desc">{% trans "Review all your previous stock predictions, sentiment queries, and market comparisons in one place to refine your strategy." %}</p>
+            
+            <!-- Mock History -->
+            <div class="mock-history">
+              <div class="mock-history-item">
+                <span class="mock-history-name">{% trans "TCS.NS (Predict)" %}</span>
+                <span class="mock-history-val" style="color:#74f29b">+1.2%</span>
+              </div>
+              <div class="mock-history-item">
+                <span class="mock-history-name">{% trans "INFY (Sentiment)" %}</span>
+                <span class="mock-history-val" style="color:#ff7b84">-0.8%</span>
+              </div>
+              <div class="mock-history-item">
+                <span class="mock-history-name">{% trans "RELIANCE (Compare)" %}</span>
+                <span class="mock-history-val" style="color:#74f29b">+2.4%</span>
+              </div>
+            </div>
+
+            <a href="{% if user.is_authenticated %}{% url 'history' %}{% else %}{% url 'signin' %}{% endif %}" class="showcase-card__cta">{% trans "View History" %} →</a>
+          </div>
+
+          <!-- NEW: CARD 5: Watchlist -->
+          <div class="showcase-card">
+            <div class="showcase-card__label">{% trans "Watchlist" %}</div>
+            <h3 class="showcase-card__title">{% trans "Monitor your" %} <span class="accent-text">{% trans "favorite stocks" %}</span></h3>
+            <p class="showcase-card__desc">{% trans "Create a custom watchlist to track real-time price movements, volume surges, and sentiment shifts for the companies you care about most." %}</p>
+            
+            <!-- Mock Watchlist -->
+            <div class="mock-watchlist">
+              <div class="mock-watchlist-box">
+                <div class="mock-watchlist-ticker">HDFCBANK</div>
+                <div class="mock-watchlist-chg" style="color:#74f29b">+1.5%</div>
+              </div>
+              <div class="mock-watchlist-box">
+                <div class="mock-watchlist-ticker">ITC</div>
+                <div class="mock-watchlist-chg" style="color:#ff7b84">-0.4%</div>
+              </div>
+            </div>
+
+            <a href="{% if user.is_authenticated %}{% url 'watchlist' %}{% else %}{% url 'signin' %}{% endif %}" class="showcase-card__cta">{% trans "View Watchlist" %} →</a>
+          </div>
+
+          <!-- CARD 6: Sentiment Analysis -->
           <div class="showcase-card showcase-card--wide">
             <div class="showcase-card__label">{% trans "Sentiment Analysis" %}</div>
             <h3 class="showcase-card__title">{% trans "Track social mood" %} <span class="accent-text">{% trans "in real time" %}</span></h3>
