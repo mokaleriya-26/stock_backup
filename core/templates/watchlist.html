@@ -1,0 +1,213 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% trans "Watchlist - From Tweets To Trades" %}</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="{% static 'core/style.css' %}">
+  <link rel="stylesheet" href="{% static 'core/analysis.css' %}">
+  <style>
+    .autocomplete-wrapper {
+      position: relative;
+      flex: 1;
+    }
+    .autocomplete-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--bg-2);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      margin-top: 4px;
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 1000;
+      display: none;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+    .autocomplete-item {
+      padding: 10px 15px;
+      cursor: pointer;
+      color: var(--muted);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .autocomplete-item:hover {
+      background: rgba(0,224,255,0.1);
+      color: #fff;
+    }
+    .autocomplete-item:last-child {
+      border-bottom: none;
+    }
+    .ticker-symbol {
+      font-weight: 800;
+      color: var(--accent);
+      margin-right: 8px;
+    }
+  </style>
+</head>
+<body class="analysis-page">
+<div class="container">
+
+  <!-- Top Bar -->
+  <div class="top">
+    <div class="brand">
+      <div class="logo">T→T</div>
+      <div>
+        <h1 class="title">{% trans "From Tweets To Trades" %}</h1>
+      </div>
+    </div>
+    <div style="display:flex; gap:10px; align-items:center;">
+      <a href="{% url 'alerts' %}" style="text-decoration: none; font-size: 1.2rem; margin-right: 10px;" title="{% trans 'Alerts' %}">
+        🔔
+      </a>
+      <a href="{% url 'home' %}" class="btn btn-ghost">
+        {% trans "Back to Home Page" %}
+      </a>
+      <a href="{% url 'signout' %}" class="btn btn-ghost" id="signoutBtn">
+        {% trans "Sign out" %}
+      </a>
+    </div>
+  </div>
+
+  <div class="page-content">
+    <div class="header-section" style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap;">
+      <div>
+        <h1 style="color:var(--accent);">{% trans "Your Watchlist" %}</h1>
+        <p class="muted">{% trans "Track your favorite stocks" %}</p>
+        <a href="{% url 'analysis' %}" class="btn btn-ghost" style="margin-top:10px; display:inline-block;">
+          &larr; {% trans "Back to Analysis" %}
+        </a>
+      </div>
+      
+      <div class="add-watchlist-form" style="margin-top:20px;">
+        <form action="{% url 'watchlist' %}" method="POST" style="display:flex; gap:10px; align-items:flex-start;">
+          {% csrf_token %}
+          <div class="autocomplete-wrapper">
+            <input type="text" name="symbol" id="symbolInput" class="ticker-input" placeholder="e.g. RELIANCE.NS" required autocomplete="off" style="width: 100%;">
+            <div id="autocompleteDropdown" class="autocomplete-dropdown"></div>
+          </div>
+          <button type="submit" class="btn btn-primary" style="height: 42px;">{% trans "Add Stock" %}</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="watchlist-grid" style="margin-top: 30px;">
+      {% if watchlist %}
+        {% for item in watchlist %}
+        <div class="card watchlist-item" data-symbol="{{ item.symbol }}">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <h3 style="margin:0; color:var(--accent);">{{ item.symbol }}</h3>
+            <form action="{% url 'watchlist_remove' %}" method="POST">
+              {% csrf_token %}
+              <input type="hidden" name="symbol" value="{{ item.symbol }}">
+              <button type="submit" class="btn btn-ghost btn-sm" style="padding: 4px 8px; border-color: rgba(255,123,132,0.5); color: #ff7b84;" title="Remove">&times;</button>
+            </form>
+          </div>
+          <div class="price-container" style="margin-top:15px;">
+            <p class="muted" style="margin:0; font-size:0.9rem;">{% trans "Current Price" %}</p>
+            <h2 class="watchlist-price loading" style="margin:5px 0 0 0;">...</h2>
+          </div>
+          <div class="muted" style="margin-top:15px; font-size:0.8rem;">
+            Added {{ item.added_at|date:"M d, Y" }}
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="card" style="grid-column: 1 / -1; text-align:center; padding: 40px;">
+          <p class="muted">{% trans "Your watchlist is empty." %}</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const symbols = Array.from(document.querySelectorAll('.watchlist-item')).map(item => item.dataset.symbol);
+    
+    if (symbols.length > 0) {
+        fetch(`/api/watchlist-prices/?symbols=${symbols.join(',')}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.prices) {
+                    document.querySelectorAll('.watchlist-item').forEach(item => {
+                        const sym = item.dataset.symbol;
+                        const priceEl = item.querySelector('.watchlist-price');
+                        if (data.prices[sym]) {
+                            priceEl.textContent = '₹' + data.prices[sym].toFixed(2);
+                            priceEl.classList.remove('loading');
+                        } else {
+                            priceEl.textContent = 'N/A';
+                            priceEl.classList.remove('loading');
+                        }
+                    });
+                }
+            })
+            .catch(err => {
+                console.error("Error fetching watchlist prices:", err);
+                document.querySelectorAll('.watchlist-price.loading').forEach(el => {
+                    el.textContent = "Error";
+                });
+            });
+    }
+});
+
+// Autocomplete logic
+const companyData = {
+    {% for symbol, name in companies.items %}
+    "{{ symbol }}": "{{ name|escapejs }}",
+    {% endfor %}
+};
+
+const symbolInput = document.getElementById('symbolInput');
+const dropdown = document.getElementById('autocompleteDropdown');
+
+symbolInput.addEventListener('input', function() {
+    const val = this.value.trim().toLowerCase();
+    dropdown.innerHTML = '';
+    
+    if (val.length >= 3) {
+        let matches = [];
+        for (const [symbol, name] of Object.entries(companyData)) {
+            if (symbol.toLowerCase().includes(val) || name.toLowerCase().includes(val)) {
+                matches.push({symbol, name});
+            }
+        }
+        
+        if (matches.length > 0) {
+            matches.slice(0, 10).forEach(match => {
+                const div = document.createElement('div');
+                div.className = 'autocomplete-item';
+                div.innerHTML = `<span class="ticker-symbol">${match.symbol}.NS</span> <span>${match.name}</span>`;
+                div.addEventListener('click', () => {
+                    symbolInput.value = match.symbol + '.NS';
+                    dropdown.style.display = 'none';
+                });
+                dropdown.appendChild(div);
+            });
+            dropdown.style.display = 'block';
+        } else {
+            dropdown.style.display = 'none';
+        }
+    } else {
+        dropdown.style.display = 'none';
+    }
+});
+
+document.addEventListener('click', function(e) {
+    if (e.target !== symbolInput && e.target !== dropdown) {
+        dropdown.style.display = 'none';
+    }
+});
+</script>
+</body>
+</html>

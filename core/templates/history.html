@@ -1,0 +1,89 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% trans "History - From Tweets To Trades" %}</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="{% static 'core/style.css' %}">
+  <link rel="stylesheet" href="{% static 'core/analysis.css' %}">
+</head>
+<body class="analysis-page">
+<div class="container">
+
+  <!-- Top Bar -->
+  <div class="top">
+    <div class="brand">
+      <div class="logo">T→T</div>
+      <div>
+        <h1 class="title">{% trans "From Tweets To Trades" %}</h1>
+      </div>
+    </div>
+    <div style="display:flex; gap:10px; align-items:center;">
+      <a href="{% url 'alerts' %}" style="text-decoration: none; font-size: 1.2rem; margin-right: 10px;" title="{% trans 'Alerts' %}">
+        🔔
+      </a>
+      <a href="{% url 'home' %}" class="btn btn-ghost">
+        {% trans "Back to Home Page" %}
+      </a>
+      <a href="{% url 'signout' %}" class="btn btn-ghost" id="signoutBtn">
+        {% trans "Sign out" %}
+      </a>
+    </div>
+  </div>
+
+  <div class="page-content">
+    <div class="header-section">
+      <h1 style="color:var(--accent);">{% trans "Your History" %}</h1>
+      <p class="muted">{% trans "Stocks you've analyzed recently" %}</p>
+      <a href="{% url 'analysis' %}" class="btn btn-ghost" style="margin-top:10px; display:inline-block;">
+        &larr; {% trans "Back to Analysis" %}
+      </a>
+    </div>
+
+    <div class="card history-card" style="margin-top:20px;">
+      {% if history %}
+      <table class="data-table history-table">
+        <thead>
+          <tr>
+            <th>{% trans "Symbol" %}</th>
+            <th>{% trans "Price Viewed" %}</th>
+            <th>{% trans "Date & Time" %}</th>
+            <th>{% trans "Action" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in history %}
+          <tr>
+            <td><strong style="color:var(--accent);">{{ item.symbol }}</strong></td>
+            <td>₹{{ item.price|floatformat:2 }}</td>
+            <td class="muted">{{ item.timestamp|date:"M d, Y H:i" }}</td>
+            <td>
+              <form action="{% url 'watchlist' %}" method="POST" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="symbol" value="{{ item.symbol }}">
+                <button type="submit" class="btn btn-ghost btn-sm">⭐ {% trans "Add to Watchlist" %}</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div style="text-align:center; padding: 40px 0;">
+        <p class="muted">{% trans "You haven't viewed any stocks yet." %}</p>
+        <a href="{% url 'analysis' %}" class="btn btn-primary">{% trans "Start Analyzing" %}</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,91 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% trans "Alerts - From Tweets To Trades" %}</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="{% static 'core/style.css' %}">
+  <link rel="stylesheet" href="{% static 'core/analysis.css' %}">
+</head>
+<body class="analysis-page">
+<div class="container">
+
+  <!-- Top Bar -->
+  <div class="top">
+    <div class="brand">
+      <div class="logo">T→T</div>
+      <div>
+        <h1 class="title">{% trans "From Tweets To Trades" %}</h1>
+      </div>
+    </div>
+    <div style="display:flex; gap:10px; align-items:center;">
+      <a href="{% url 'home' %}" class="btn btn-ghost">
+        {% trans "Back to Home Page" %}
+      </a>
+      <a href="{% url 'signout' %}" class="btn btn-ghost" id="signoutBtn">
+        {% trans "Sign out" %}
+      </a>
+    </div>
+  </div>
+
+  <div class="page-content">
+    <div class="header-section">
+      <h1 style="color:var(--accent);">{% trans "Your Alerts" %}</h1>
+      <p class="muted">{% trans "Price changes since you last checked these stocks" %}</p>
+      <a href="{% url 'analysis' %}" class="btn btn-ghost" style="margin-top:10px; display:inline-block;">
+        &larr; {% trans "Back to Analysis" %}
+      </a>
+    </div>
+
+    <div class="watchlist-grid" style="margin-top: 30px;">
+      {% if alerts %}
+        {% for alert in alerts %}
+        <div class="card watchlist-item" style="{% if alert.status == 'up' %}border-top: 4px solid #74f29b;{% elif alert.status == 'down' %}border-top: 4px solid #ff7b84;{% endif %}">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <h3 style="margin:0; color:var(--accent);">{{ alert.symbol }}</h3>
+            {% if alert.status == 'up' %}
+            <span style="font-size: 1.5rem;" title="Price Increased">📈</span>
+            {% elif alert.status == 'down' %}
+            <span style="font-size: 1.5rem;" title="Price Decreased">📉</span>
+            {% else %}
+            <span style="font-size: 1.5rem; opacity: 0.5;" title="No Change">➖</span>
+            {% endif %}
+          </div>
+          <div style="margin-top:15px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <p class="muted" style="margin:0; font-size:0.8rem;">Last Seen</p>
+              <h3 style="margin:5px 0 0 0;">₹{{ alert.last_seen }}</h3>
+            </div>
+            <div>
+              <p class="muted" style="margin:0; font-size:0.8rem;">Current</p>
+              <h3 style="margin:5px 0 0 0;">₹{{ alert.current }}</h3>
+            </div>
+          </div>
+          {% if alert.status != 'same' %}
+          <div style="margin-top:15px; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 8px; text-align: center;">
+            <strong style="color: {% if alert.status == 'up' %}#74f29b{% else %}#ff7b84{% endif %};">
+              {% if alert.status == 'up' %}+{% else %}-{% endif %}₹{{ alert.diff }}
+            </strong>
+          </div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="card" style="grid-column: 1 / -1; text-align:center; padding: 40px;">
+          <p class="muted">{% trans "You don't have any tracked stocks yet." %}</p>
+          <a href="{% url 'analysis' %}" class="btn btn-primary" style="margin-top: 15px;">{% trans "Analyze a Stock" %}</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

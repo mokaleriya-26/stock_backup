@@ -1,0 +1,68 @@
+{% load static %}
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% trans "FTTT – Sign Up" %}</title>
+  <link rel="stylesheet" href="{% static 'core/style.css' %}">
+</head>
+
+<body class="signup-page">
+  <div class="auth-container">
+      <div class="auth-left">
+          <div class="fttt-logo-box">
+              <div class="fttt-logo">T → T</div>
+               <div class="fttt-logo-text">
+               <strong>{% trans "From Tweets to Trades" %}</strong>
+               
+               </div>
+          </div>
+
+
+      </div>
+
+    <div class="auth-right">
+      <div class="auth-card">
+        <h2>{% trans "Create Your Account" %}</h2>
+
+        <button class="btn-google">
+          <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" style="width:20px; height:20x;">
+          <span>{% trans "Sign Up with Google" %}</span>
+        </button>
+
+        <p class="divider-text">{% trans "— or sign up with email —" %}</p>
+
+        <form method="post" action="{% url 'signup' %}">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="name">{% trans "Full Name" %}</label>
+            <input type="text" id="name" name="name" required placeholder="{% trans 'Enter your full name' %}">
+          </div>
+
+          <div class="form-group">
+            <label for="email">{% trans "Email Address" %}</label>
+            <input type="email" id="email" name="email" required placeholder="name@example.com">
+          </div>
+
+          <div class="form-group">
+            <label for="password">{% trans "Password" %}</label>
+            <input type="password" id="password" name="password" required placeholder="{% trans 'Must be 8+ characters' %}">
+          </div>
+          <input type="hidden" name="debug" value="yes">
+
+          <button type="submit" class="auth-btn-primary">{% trans "Sign Up" %}</button>
+        </form>
+
+        <div class="footer-links">
+          {% trans "Already have an account?" %}
+          <a href="{% url 'signin' %}">{% trans "Sign In" %}</a><br>
+          <br>
+          <a href="{% url 'home' %}">{% trans "Back to Home" %}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
